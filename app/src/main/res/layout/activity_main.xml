@@ -5,9 +5,17 @@
 
 
     <io.netopen.hotbitmapgg.view.CreditSesameRingView
+        android:id="@+id/credit_sesame_ring_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
+
+
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="评估信用" />
 
 
 </RelativeLayout>

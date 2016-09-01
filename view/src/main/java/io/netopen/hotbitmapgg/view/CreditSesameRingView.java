@@ -1,7 +1,5 @@
 package io.netopen.hotbitmapgg.view;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -22,12 +20,17 @@ import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.LinearInterpolator;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 /**
- * Created by hcc on 2016/8/31.
+ * Created by hcc on 16/9/1 22:21
+ * 100332338@qq.com
  * <p/>
- * 仿芝麻信用的圆环实现
+ * 仿芝麻信用的圆环实现(旧版)
  */
-public class CreditSesameRingView extends View implements View.OnClickListener
+public class CreditSesameRingView extends View
 {
 
     // 最外层圆环渐变色环颜色
@@ -47,12 +50,12 @@ public class CreditSesameRingView extends View implements View.OnClickListener
             "650", "良好",
             "600", "中等",
             "550", "较差",
-            "350", "很差",
-            "150"
+            "350"
     };
+    //, "很差", "150"
 
     //中间进度颜色
-    private static final int GREEN_COLOR = 0xFF00D4AF;
+    private static final int GREEN_COLOR = 0xFF06C494;
 
     // View宽度
     private int width;
@@ -115,10 +118,10 @@ public class CreditSesameRingView extends View implements View.OnClickListener
     private RectF mMiddleProgressArc;
 
     // 圆环起始角度
-    private float mStartAngle = 120f;
+    private float mStartAngle = 115f;
 
     // 圆环结束角度
-    private float mEndAngle = 240f;
+    private float mEndAngle = 230f;
 
     // 指针全部进度
     private float mTotalAngle = 240f;
@@ -130,10 +133,14 @@ public class CreditSesameRingView extends View implements View.OnClickListener
     private int defaultSize;
 
     // 最小数字
-    private int mMinNum = 150;
+    private int mMinNum = 350;
 
     // 最大数字
     private int mMaxNum = 950;
+
+    private String sesameLevel = "";
+
+    private String evaluationTime = "";
 
     private PaintFlagsDrawFilter mPaintFlagsDrawFilter;
 
@@ -191,7 +198,7 @@ public class CreditSesameRingView extends View implements View.OnClickListener
         mMiddleRingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mMiddleRingPaint.setStyle(Paint.Style.STROKE);
         mMiddleRingPaint.setStrokeCap(Paint.Cap.ROUND);
-        mMiddleRingPaint.setStrokeWidth(4);
+        mMiddleRingPaint.setStrokeWidth(5);
         mMiddleRingPaint.setColor(Color.GRAY);
 
         //内层圆环画笔设置
@@ -205,8 +212,8 @@ public class CreditSesameRingView extends View implements View.OnClickListener
 
         //外层圆环文本画笔设置
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setColor(Color.BLACK);
-        mTextPaint.setTextSize(25);
+        mTextPaint.setColor(Color.GRAY);
+        mTextPaint.setTextSize(30);
 
         //中间文字画笔设置
         mCenterTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -216,23 +223,23 @@ public class CreditSesameRingView extends View implements View.OnClickListener
         mMiddleProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mMiddleProgressPaint.setColor(GREEN_COLOR);
         mMiddleProgressPaint.setStrokeCap(Paint.Cap.ROUND);
-        mMiddleProgressPaint.setStrokeWidth(4);
+        mMiddleProgressPaint.setStrokeWidth(5);
         mMiddleProgressPaint.setStyle(Paint.Style.STROKE);
 
         //指针图片画笔
         mPointerBitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPointerBitmapPaint.setColor(GREEN_COLOR);
 
         //获取指针图片
         mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_pointer);
         mBitmapHeight = mBitmap.getHeight();
         mBitmapWidth = mBitmap.getWidth();
-
-        setOnClickListener(this);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {
+
         setMeasuredDimension(resolveMeasure(widthMeasureSpec, defaultSize),
                 resolveMeasure(heightMeasureSpec, defaultSize));
     }
@@ -302,23 +309,26 @@ public class CreditSesameRingView extends View implements View.OnClickListener
     {
         //设置画布绘图无锯齿
         canvas.setDrawFilter(mPaintFlagsDrawFilter);
-
         canvas.save();
         canvas.translate(width / 2, height / 2);
+
         //画最外层的渐变圆环
-        canvas.rotate(150);
+        canvas.rotate(140);
         canvas.drawArc(mOuterArc, -mStartAngle, -mEndAngle, false, mGradientRingPaint);
+
+        //绘制内圈圆形
+        canvas.drawArc(mInnerArc, -mStartAngle, -mEndAngle, false, mInnerRingPaint);
+        canvas.drawArc(mMiddleArc, -mStartAngle, -mEndAngle, false, mMiddleRingPaint);
         canvas.restore();
+
         //绘制刻度线
         int dst = (int) (2 * radius - mGradientRingPaint.getStrokeWidth());
-        for (int i = 0; i <= 60; i++)
+        for (int i = 0; i <= 50; i++)
         {
             canvas.save();
-            //每次旋转4度绘制分割线
-            canvas.rotate(-(-30 + 4 * i), radius, radius);
+            canvas.rotate(-(-10 + 4 * i), radius, radius);
             if (i % 10 == 0)
             {
-                //分为6个区块进行绘制 每个区有10个小间隔
                 canvas.drawLine(dst, radius, 2 * radius, radius, mBigCalibrationPaint);
             } else
             {
@@ -328,48 +338,42 @@ public class CreditSesameRingView extends View implements View.OnClickListener
         }
 
 
-        //绘制内圈圆形
-        canvas.save();
-        canvas.translate(radius, radius);
-        canvas.rotate(150);
-        canvas.drawArc(mInnerArc, -mStartAngle, -mEndAngle, false, mInnerRingPaint);
-        canvas.drawArc(mMiddleArc, -mStartAngle, -mEndAngle, false, mMiddleRingPaint);
-        canvas.restore();
-
         //绘制圆弧上的文字
-        for (int i = 0; i <= 12; i++)
+        for (int i = 0; i <= 10; i++)
         {
             canvas.save();
-            canvas.rotate(-(-30 + 20 * i - 88), radius, radius);
+            canvas.rotate(-(-10 + 20 * i - 88), radius, radius);
             canvas.drawText(text[i], radius - 10, radius * 3 / 16, mTextPaint);
             canvas.restore();
         }
 
-        //绘制圆中心数字文字
-        //绘制logo
+        //绘制Logo
         mCenterTextPaint.setTextSize(30);
         mCenterTextPaint.setColor(Color.GRAY);
         canvas.drawText("BETA", radius, radius - 130, mCenterTextPaint);
+
         //绘制信用分数
         mCenterTextPaint.setColor(GREEN_COLOR);
         mCenterTextPaint.setTextSize(200);
         mCenterTextPaint.setStyle(Paint.Style.STROKE);
         canvas.drawText(String.valueOf(mMinNum), radius, radius + 70, mCenterTextPaint);
+
         //绘制信用级别
         mCenterTextPaint.setColor(GREEN_COLOR);
         mCenterTextPaint.setTextSize(80);
-        canvas.drawText("信用良好", radius, radius + 160, mCenterTextPaint);
+        canvas.drawText(sesameLevel, radius, radius + 160, mCenterTextPaint);
+
         //绘制评估时间
         mCenterTextPaint.setColor(Color.GRAY);
         mCenterTextPaint.setTextSize(30);
-        canvas.drawText("评估时间:2016-8-31", radius, radius + 205, mCenterTextPaint);
+        canvas.drawText(evaluationTime, radius, radius + 205, mCenterTextPaint);
 
-
+        //绘制中间进度和指针图片
         canvas.save();
         canvas.translate(radius, radius);
         canvas.rotate(270);
         canvas.drawArc(mMiddleProgressArc, -mStartAngle, mCurrentAngle, false, mMiddleProgressPaint);
-        canvas.rotate(60 + mCurrentAngle);
+        canvas.rotate(68 + mCurrentAngle);
         @SuppressLint("DrawAllocation") Matrix matrix = new Matrix();
         matrix.preTranslate(-oval4 - mBitmapWidth * 3 / 8, -mBitmapHeight / 2);
         canvas.drawBitmap(mBitmap, matrix, mPointerBitmapPaint);
@@ -377,13 +381,57 @@ public class CreditSesameRingView extends View implements View.OnClickListener
     }
 
 
+    /**
+     * 设置芝麻信用数据
+     *
+     * @param num
+     */
+    public void setSesameData(int num)
+    {
+
+        if (num <= 350)
+        {
+            mMaxNum = num;
+            mTotalAngle = 0f;
+            sesameLevel = "信用较差";
+            evaluationTime = "评估时间:" + getCurrentTime();
+        } else if (num <= 550)
+        {
+            mMaxNum = num;
+            mTotalAngle = (num - 350) * 80 / 400f;
+            sesameLevel = "信用良好";
+            evaluationTime = "评估时间:" + getCurrentTime();
+        } else if (num <= 700)
+        {
+            mMaxNum = num;
+            mTotalAngle = (num - 550) * 120 / 150f + 65;
+            sesameLevel = "信用优秀";
+            evaluationTime = "评估时间:" + getCurrentTime();
+        } else if (num <= 950)
+        {
+            mMaxNum = num;
+            mTotalAngle = (num - 700) * 40 / 250f + 185;
+            sesameLevel = "信用极好";
+            evaluationTime = "评估时间:" + getCurrentTime();
+        } else
+        {
+            mTotalAngle = 240f;
+        }
+
+        startRotateAnim();
+    }
+
+
+    /**
+     * 开始指针旋转动画
+     */
     public void startRotateAnim()
     {
 
-        ValueAnimator mAnimator = ValueAnimator.ofFloat(mCurrentAngle, mTotalAngle);
-        mAnimator.setInterpolator(new BounceInterpolator());
-        mAnimator.setDuration(3000);
-        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        ValueAnimator mAngleAnim = ValueAnimator.ofFloat(mCurrentAngle, mTotalAngle);
+        mAngleAnim.setInterpolator(new BounceInterpolator());
+        mAngleAnim.setDuration(3000);
+        mAngleAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
         {
 
             @Override
@@ -394,23 +442,13 @@ public class CreditSesameRingView extends View implements View.OnClickListener
                 postInvalidate();
             }
         });
-        mAnimator.addListener(new AnimatorListenerAdapter()
-        {
-
-            @Override
-            public void onAnimationEnd(Animator animation)
-            {
-
-                super.onAnimationEnd(animation);
-            }
-        });
-        mAnimator.start();
+        mAngleAnim.start();
 
 
-        ValueAnimator valueAnimator = ValueAnimator.ofInt(mMinNum, mMaxNum);
-        valueAnimator.setDuration(3000);
-        valueAnimator.setInterpolator(new LinearInterpolator());
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        ValueAnimator mNumAnim = ValueAnimator.ofInt(mMinNum, mMaxNum);
+        mNumAnim.setDuration(3000);
+        mNumAnim.setInterpolator(new LinearInterpolator());
+        mNumAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
         {
 
             @Override
@@ -421,21 +459,33 @@ public class CreditSesameRingView extends View implements View.OnClickListener
                 postInvalidate();
             }
         });
-        valueAnimator.start();
-    }
-
-    @Override
-    public void onClick(View view)
-    {
-
-        startRotateAnim();
+        mNumAnim.start();
     }
 
 
+    /**
+     * dp2px
+     *
+     * @param values
+     * @return
+     */
     public int dp2px(int values)
     {
 
         float density = getResources().getDisplayMetrics().density;
         return (int) (values * density + 0.5f);
+    }
+
+    /**
+     * 获取当前时间
+     *
+     * @return
+     */
+    public String getCurrentTime()
+    {
+
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat format = new SimpleDateFormat("yyyy:MM:dd");
+        return format.format(new Date());
     }
 }
