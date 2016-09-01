@@ -23,83 +23,119 @@ import android.view.animation.BounceInterpolator;
 import android.view.animation.LinearInterpolator;
 
 /**
- * Created by 11 on 2016/8/31.
+ * Created by hcc on 2016/8/31.
  * <p/>
- * 仿蚂蚁聚宝的圆环实现
+ * 仿芝麻信用的圆环实现
  */
 public class CreditSesameRingView extends View implements View.OnClickListener
 {
 
-    private Paint mPaint;
-
-    // 渐变色环颜色
+    // 最外层圆环渐变色环颜色
     private final int[] mColors = new int[]{
-            0xFFFF0000, 0xFFFFFF00, 0xff00ff00, 0xff00ffff, 0xff0000ff, 0xffff00ff
+            0xFFFF0000,
+            0xFFFFFF00,
+            0xFF00FF00,
+            0xFF00FFFF,
+            0xFF0000FF,
+            0xFFFF00FF
     };
 
+    //圆环的信用等级文字
     private static final String[] text = {
             "950", "极好",
             "700", "优秀",
-            "650", "良好", "600",
-            "中等", "550", "较差",
-            "350", "很差", "150"
+            "650", "良好",
+            "600", "中等",
+            "550", "较差",
+            "350", "很差",
+            "150"
     };
 
-    //bitmap的宽高
-    private int bitmapWidth, bitmapHeight;
+    //中间进度颜色
+    private static final int GREEN_COLOR = 0xFF00D4AF;
 
-    private Paint paintGap1;
-
-    private Paint paintGap2;
-
-    private Paint paintMiddleCircle;
-
-    private Paint paintInnerCircle;
-
-    private Paint paintText;
-
-    private Paint paintMiddleArc;
-
-    private Paint paintBitmap;
-
+    // View宽度
     private int width;
 
+    // View高度
     private int height;
 
-    //中心点x
-    private int CENTER_X;
+    // 圆环半径
+    private int radius;
 
-    private PaintFlagsDrawFilter pfd;
+    // 指针图片
+    private Bitmap mBitmap;
 
-    private RectF oval;
+    // 指针图片宽度
+    private int mBitmapWidth;
 
+    // 指针图片高度
+    private int mBitmapHeight;
 
-    private Bitmap bitmap;
+    // 最外层渐变圆环画笔
+    private Paint mGradientRingPaint;
 
-    private float r1;
+    // 大刻度画笔
+    private Paint mSmallCalibrationPaint;
 
-    private RectF arc;
+    // 小刻度画笔
+    private Paint mBigCalibrationPaint;
 
-    private ValueAnimator animator;
+    // 中间进度圆环画笔
+    private Paint mMiddleRingPaint;
 
-    private Paint centerTextPaint;
+    // 内虚线圆环画笔
+    private Paint mInnerRingPaint;
 
-    private RectF arc1;
+    // 外层圆环文本画笔
+    private Paint mTextPaint;
 
-    private RectF arc2;
+    // 中间进度圆环画笔
+    private Paint mMiddleProgressPaint;
 
+    // 指针图片画笔
+    private Paint mPointerBitmapPaint;
+
+    //中间文本画笔
+    private Paint mCenterTextPaint;
+
+    // 绘制外层圆环的矩形
+    private RectF mOuterArc;
+
+    // 绘制内层圆环的矩形
+    private RectF mInnerArc;
+
+    // 绘制中间圆环的矩形
+    private RectF mMiddleArc;
+
+    // 中间进度圆环的值
+    private float oval4;
+
+    // 绘制中间进度圆环的矩形
+    private RectF mMiddleProgressArc;
+
+    // 圆环起始角度
     private float mStartAngle = 120f;
 
+    // 圆环结束角度
     private float mEndAngle = 240f;
 
-    private static final int GREEN_COLOR = 0xff00d4af;
+    // 指针全部进度
+    private float mTotalAngle = 240f;
 
-    private float totalRotateAngle = 200f;
+    // 指针当前进度
+    private float mCurrentAngle = 0f;
 
-    private float currentRotateAngle = 0f;
-
-    //默认宽高值
+    // View默认宽高值
     private int defaultSize;
+
+    // 最小数字
+    private int mMinNum = 150;
+
+    // 最大数字
+    private int mMaxNum = 950;
+
+    private PaintFlagsDrawFilter mPaintFlagsDrawFilter;
 
 
     public CreditSesameRingView(Context context)
@@ -121,74 +157,75 @@ public class CreditSesameRingView extends View implements View.OnClickListener
         init();
     }
 
+    /**
+     * 初始化
+     */
     private void init()
     {
-
-
-        //初始化默认宽高值
+        //设置默认宽高值
         defaultSize = dp2px(250);
 
-        //初始化渐变
+        //初始化圆环渐变色渲染
         Shader mShader = new SweepGradient(0, 0, mColors, null);
 
-        pfd = new PaintFlagsDrawFilter
+        //设置图片线条的抗锯齿
+        mPaintFlagsDrawFilter = new PaintFlagsDrawFilter
                 (0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
 
-        // 最外层圆环渐变画笔
-        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setShader(mShader);
-        mPaint.setStrokeCap(Paint.Cap.SQUARE);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(40);
+        //最外层圆环渐变画笔设置
+        mGradientRingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mGradientRingPaint.setShader(mShader);
+        mGradientRingPaint.setStrokeCap(Paint.Cap.SQUARE);
+        mGradientRingPaint.setStyle(Paint.Style.STROKE);
+        mGradientRingPaint.setStrokeWidth(40);
 
-        //圆环辅助线画笔
-        paintGap1 = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintGap2 = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintGap1.setColor(Color.WHITE);
-        paintGap1.setStrokeWidth(1);
-        paintGap2.setColor(Color.WHITE);
-        paintGap2.setStrokeWidth(3);
+        //最外层圆环刻度画笔设置
+        mSmallCalibrationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBigCalibrationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mSmallCalibrationPaint.setColor(Color.WHITE);
+        mSmallCalibrationPaint.setStrokeWidth(1);
+        mBigCalibrationPaint.setColor(Color.WHITE);
+        mBigCalibrationPaint.setStrokeWidth(3);
 
+        //中间圆环画笔设置
+        mMiddleRingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mMiddleRingPaint.setStyle(Paint.Style.STROKE);
+        mMiddleRingPaint.setStrokeCap(Paint.Cap.ROUND);
+        mMiddleRingPaint.setStrokeWidth(4);
+        mMiddleRingPaint.setColor(Color.GRAY);
 
-        //中间圆画笔
-        paintMiddleCircle = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintMiddleCircle.setStyle(Paint.Style.STROKE);
-        paintMiddleCircle.setStrokeCap(Paint.Cap.ROUND);
-        paintMiddleCircle.setStrokeWidth(4);
-        paintMiddleCircle.setColor(Color.GRAY);
-        //内虚线圆画笔
-        paintInnerCircle = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintInnerCircle.setStyle(Paint.Style.STROKE);
-        paintInnerCircle.setStrokeCap(Paint.Cap.ROUND);
-        paintInnerCircle.setStrokeWidth(4);
-        paintInnerCircle.setColor(Color.GRAY);
-        //设置虚线
+        //内层圆环画笔设置
+        mInnerRingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mInnerRingPaint.setStyle(Paint.Style.STROKE);
+        mInnerRingPaint.setStrokeCap(Paint.Cap.ROUND);
+        mInnerRingPaint.setStrokeWidth(4);
+        mInnerRingPaint.setColor(Color.GRAY);
         PathEffect mPathEffect = new DashPathEffect(new float[]{5, 5, 5, 5}, 1);
-        paintInnerCircle.setPathEffect(mPathEffect);
+        mInnerRingPaint.setPathEffect(mPathEffect);
 
-        //圆弧文本画笔
-        paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintText.setColor(Color.BLACK);
-        paintText.setTextSize(25);
+        //外层圆环文本画笔设置
+        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint.setColor(Color.BLACK);
+        mTextPaint.setTextSize(25);
 
-        //中间文字画布
-        centerTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        centerTextPaint.setTextAlign(Paint.Align.CENTER);
+        //中间文字画笔设置
+        mCenterTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mCenterTextPaint.setTextAlign(Paint.Align.CENTER);
 
+        //中间圆环进度画笔设置
+        mMiddleProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mMiddleProgressPaint.setColor(GREEN_COLOR);
+        mMiddleProgressPaint.setStrokeCap(Paint.Cap.ROUND);
+        mMiddleProgressPaint.setStrokeWidth(4);
+        mMiddleProgressPaint.setStyle(Paint.Style.STROKE);
 
-        //绿色圆弧画笔
-        paintMiddleArc = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paintMiddleArc.setColor(GREEN_COLOR);
-        paintMiddleArc.setStrokeCap(Paint.Cap.ROUND);
-        paintMiddleArc.setStrokeWidth(4);
-        paintMiddleArc.setStyle(Paint.Style.STROKE);
+        //指针图片画笔
+        mPointerBitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        //绿色圆弧上的小坐标图片画笔
-        paintBitmap = new Paint(Paint.ANTI_ALIAS_FLAG);
-        //获取图片
-        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.location1_03);
-        bitmapHeight = bitmap.getHeight();
-        bitmapWidth = bitmap.getWidth();
+        //获取指针图片
+        mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_pointer);
+        mBitmapHeight = mBitmap.getHeight();
+        mBitmapWidth = mBitmap.getWidth();
 
         setOnClickListener(this);
     }
@@ -196,27 +233,44 @@ public class CreditSesameRingView extends View implements View.OnClickListener
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {
-
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-
-        //测量宽度
-        if (widthMode == MeasureSpec.AT_MOST)
-            width = defaultSize;
-        else
-            width = widthSize;
-
-        //测量高度
-        if (heightMode == MeasureSpec.AT_MOST)
-            height = defaultSize;
-        else
-            height = heightSize;
-
-        //设置测量的宽高值
-        setMeasuredDimension(width, height);
+        setMeasuredDimension(resolveMeasure(widthMeasureSpec, defaultSize),
+                resolveMeasure(heightMeasureSpec, defaultSize));
     }
+
+
+    /**
+     * 根据传入的值进行测量
+     *
+     * @param measureSpec
+     * @param defaultSize
+     */
+    public int resolveMeasure(int measureSpec, int defaultSize)
+    {
+
+        int result = 0;
+        int specSize = MeasureSpec.getSize(measureSpec);
+        switch (MeasureSpec.getMode(measureSpec))
+        {
+
+            case MeasureSpec.UNSPECIFIED:
+                result = defaultSize;
+                break;
+
+            case MeasureSpec.AT_MOST:
+                //设置warp_content时设置默认值
+                result = Math.min(specSize, defaultSize);
+                break;
+            case MeasureSpec.EXACTLY:
+                //设置math_parent 和设置了固定宽高值
+                break;
+
+            default:
+                result = defaultSize;
+        }
+
+        return result;
+    }
+
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh)
@@ -224,24 +278,22 @@ public class CreditSesameRingView extends View implements View.OnClickListener
 
         super.onSizeChanged(w, h, oldw, oldh);
 
-
+        //确定View宽高
         width = w;
         height = h;
-        //中心点坐标
-        CENTER_X = width / 2;
-
-        float r = CENTER_X - mPaint.getStrokeWidth() * 0.5f;
-        oval = new RectF(-r, -r, r, r);
-
-        r1 = CENTER_X * 6 / 8;
-        arc = new RectF(-r1, -r1, r1, r1);
-
-
-        float r2 = CENTER_X * 5 / 8;
-        float r3 = CENTER_X * 3 / 4;
-
-        arc1 = new RectF(-r2, -r2, r2, r2);
-        arc2 = new RectF(-r3, -r3, r3, r3);
+        //圆环半径
+        radius = width / 2;
+        // 外层圆环
+        float oval1 = radius - mGradientRingPaint.getStrokeWidth() * 0.5f;
+        mOuterArc = new RectF(-oval1, -oval1, oval1, oval1);
+        //中间和内层圆环
+        float oval2 = radius * 5 / 8;
+        float oval3 = radius * 3 / 4;
+        mInnerArc = new RectF(-oval2, -oval2, oval2, oval2);
+        mMiddleArc = new RectF(-oval3, -oval3, oval3, oval3);
+        //中间进度圆环
+        oval4 = radius * 6 / 8;
+        mMiddleProgressArc = new RectF(-oval4, -oval4, oval4, oval4);
     }
 
 
@@ -249,28 +301,28 @@ public class CreditSesameRingView extends View implements View.OnClickListener
     protected void onDraw(Canvas canvas)
     {
         //设置画布绘图无锯齿
-        canvas.setDrawFilter(pfd);
+        canvas.setDrawFilter(mPaintFlagsDrawFilter);
 
         canvas.save();
         canvas.translate(width / 2, height / 2);
         //画最外层的渐变圆环
         canvas.rotate(150);
-        canvas.drawArc(oval, -mStartAngle, -mEndAngle, false, mPaint);
+        canvas.drawArc(mOuterArc, -mStartAngle, -mEndAngle, false, mGradientRingPaint);
         canvas.restore();
-        //绘制分割线
-        int a = (int) (2 * CENTER_X - mPaint.getStrokeWidth());
+        //绘制刻度线
+        int dst = (int) (2 * radius - mGradientRingPaint.getStrokeWidth());
         for (int i = 0; i <= 60; i++)
         {
             canvas.save();
             //每次旋转4度绘制分割线
-            canvas.rotate(-(-30 + 4 * i), CENTER_X, CENTER_X);
+            canvas.rotate(-(-30 + 4 * i), radius, radius);
             if (i % 10 == 0)
             {
                 //分为6个区块进行绘制 每个区有10个小间隔
-                canvas.drawLine(a, CENTER_X, 2 * CENTER_X, CENTER_X, paintGap2);
+                canvas.drawLine(dst, radius, 2 * radius, radius, mBigCalibrationPaint);
             } else
             {
-                canvas.drawLine(a, CENTER_X, 2 * CENTER_X, CENTER_X, paintGap1);
+                canvas.drawLine(dst, radius, 2 * radius, radius, mSmallCalibrationPaint);
             }
             canvas.restore();
         }
@@ -278,72 +330,71 @@ public class CreditSesameRingView extends View implements View.OnClickListener
 
         //绘制内圈圆形
         canvas.save();
-        canvas.translate(CENTER_X, CENTER_X);
+        canvas.translate(radius, radius);
         canvas.rotate(150);
-        canvas.drawArc(arc1, -mStartAngle, -mEndAngle, false, paintInnerCircle);
-        canvas.drawArc(arc2, -mStartAngle, -mEndAngle, false, paintMiddleCircle);
+        canvas.drawArc(mInnerArc, -mStartAngle, -mEndAngle, false, mInnerRingPaint);
+        canvas.drawArc(mMiddleArc, -mStartAngle, -mEndAngle, false, mMiddleRingPaint);
         canvas.restore();
 
         //绘制圆弧上的文字
         for (int i = 0; i <= 12; i++)
         {
             canvas.save();
-            canvas.rotate(-(-30 + 20 * i - 88), CENTER_X, CENTER_X);
-            canvas.drawText(text[i], CENTER_X - 10, CENTER_X * 3 / 16, paintText);
+            canvas.rotate(-(-30 + 20 * i - 88), radius, radius);
+            canvas.drawText(text[i], radius - 10, radius * 3 / 16, mTextPaint);
             canvas.restore();
         }
 
         //绘制圆中心数字文字
         //绘制logo
-        centerTextPaint.setTextSize(30);
-        centerTextPaint.setColor(Color.GRAY);
-        canvas.drawText("BETA", CENTER_X, CENTER_X - 130, centerTextPaint);
+        mCenterTextPaint.setTextSize(30);
+        mCenterTextPaint.setColor(Color.GRAY);
+        canvas.drawText("BETA", radius, radius - 130, mCenterTextPaint);
         //绘制信用分数
-        centerTextPaint.setColor(GREEN_COLOR);
-        centerTextPaint.setTextSize(200);
-        centerTextPaint.setStyle(Paint.Style.STROKE);
-        canvas.drawText(String.valueOf(num), CENTER_X, CENTER_X + 70, centerTextPaint);
+        mCenterTextPaint.setColor(GREEN_COLOR);
+        mCenterTextPaint.setTextSize(200);
+        mCenterTextPaint.setStyle(Paint.Style.STROKE);
+        canvas.drawText(String.valueOf(mMinNum), radius, radius + 70, mCenterTextPaint);
         //绘制信用级别
-        centerTextPaint.setColor(GREEN_COLOR);
-        centerTextPaint.setTextSize(80);
-        canvas.drawText("信用良好", CENTER_X, CENTER_X + 160, centerTextPaint);
+        mCenterTextPaint.setColor(GREEN_COLOR);
+        mCenterTextPaint.setTextSize(80);
+        canvas.drawText("信用良好", radius, radius + 160, mCenterTextPaint);
         //绘制评估时间
-        centerTextPaint.setColor(Color.GRAY);
-        centerTextPaint.setTextSize(30);
-        canvas.drawText("评估时间:2016-8-31", CENTER_X, CENTER_X + 205, centerTextPaint);
+        mCenterTextPaint.setColor(Color.GRAY);
+        mCenterTextPaint.setTextSize(30);
+        canvas.drawText("评估时间:2016-8-31", radius, radius + 205, mCenterTextPaint);
 
 
         canvas.save();
-        canvas.translate(CENTER_X, CENTER_X);
+        canvas.translate(radius, radius);
         canvas.rotate(270);
-        canvas.drawArc(arc, -mStartAngle, currentRotateAngle, false, paintMiddleArc);
-        canvas.rotate(60 + currentRotateAngle);
+        canvas.drawArc(mMiddleProgressArc, -mStartAngle, mCurrentAngle, false, mMiddleProgressPaint);
+        canvas.rotate(60 + mCurrentAngle);
         @SuppressLint("DrawAllocation") Matrix matrix = new Matrix();
-        matrix.preTranslate(-r1 - bitmapWidth * 3 / 8, -bitmapHeight / 2);
-        canvas.drawBitmap(bitmap, matrix, paintBitmap);
+        matrix.preTranslate(-oval4 - mBitmapWidth * 3 / 8, -mBitmapHeight / 2);
+        canvas.drawBitmap(mBitmap, matrix, mPointerBitmapPaint);
         canvas.restore();
     }
 
-    int num = 150;
 
     public void startRotateAnim()
     {
 
-        animator = ValueAnimator.ofFloat(currentRotateAngle, totalRotateAngle);
-        animator.setInterpolator(new BounceInterpolator());
-        animator.setDuration(3000);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        ValueAnimator mAnimator = ValueAnimator.ofFloat(mCurrentAngle, mTotalAngle);
+        mAnimator.setInterpolator(new BounceInterpolator());
+        mAnimator.setDuration(3000);
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
         {
 
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator)
             {
 
-                currentRotateAngle = (float) valueAnimator.getAnimatedValue();
+                mCurrentAngle = (float) valueAnimator.getAnimatedValue();
                 postInvalidate();
             }
         });
-        animator.addListener(new AnimatorListenerAdapter()
+        mAnimator.addListener(new AnimatorListenerAdapter()
         {
 
             @Override
@@ -353,11 +404,11 @@ public class CreditSesameRingView extends View implements View.OnClickListener
                 super.onAnimationEnd(animation);
             }
         });
-        animator.start();
+        mAnimator.start();
 
 
-        ValueAnimator valueAnimator = ValueAnimator.ofInt(num, 700);
-        valueAnimator.setDuration(2000);
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(mMinNum, mMaxNum);
+        valueAnimator.setDuration(3000);
         valueAnimator.setInterpolator(new LinearInterpolator());
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
         {
@@ -366,7 +417,7 @@ public class CreditSesameRingView extends View implements View.OnClickListener
             public void onAnimationUpdate(ValueAnimator valueAnimator)
             {
 
-                num = (int) valueAnimator.getAnimatedValue();
+                mMinNum = (int) valueAnimator.getAnimatedValue();
                 postInvalidate();
             }
         });
