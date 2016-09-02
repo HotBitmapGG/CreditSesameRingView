@@ -1,5 +1,5 @@
 # CreditSesameRingView
-Imitation of Ali credit sesame new old ring view. from the inspiration of: [jianshu][http://www.jianshu.com/p/f09feb25b54d]
+Imitation of Ali credit sesame new old ring view. from the inspiration of: [jianshu](http://www.jianshu.com/p/f09feb25b54d)
 
 
 ## Screenshots Gif
