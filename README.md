@@ -4,10 +4,10 @@ Imitation of Ali credit sesame new old ring view. from the inspiration of: [jian
 
 ## Screenshots Gif
 
-<a href="art/01.gif"><img src="art/01.gif" width="50%"/></a>
+<a href="art/01.gif"><img src="art/01.gif" width="50%"/></a> <a href="art/02.gif"><img src="art/02.gif" width="50%"/></a>
 
 ## Screenshots Png
-<a href="art/02.png"><img src="art/02.png" width="40%"/></a> <a href="art/03.png"><img src="art/03.png" width="40%"/></a>
+<a href="art/03.png"><img src="art/03.png" width="40%"/></a> <a href="art/04.png"><img src="art/04.png" width="40%"/></a>
 
 
 
