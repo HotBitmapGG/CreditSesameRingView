@@ -4,7 +4,7 @@ Imitation of Ali credit sesame new old ring view.
 
 ## Screenshots Gif
 
-<a href="art/01.gif"><img src="art/01.png" width="50%"/></a>
+<a href="art/01.gif"><img src="art/01.gif" width="50%"/></a>
 
 ## Screenshots Png
 <a href="art/02.png"><img src="art/02.png" width="40%"/></a> <a href="art/03.png"><img src="art/03.png" width="40%"/></a>
