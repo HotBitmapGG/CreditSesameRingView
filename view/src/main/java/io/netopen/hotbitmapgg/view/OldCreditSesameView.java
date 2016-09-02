@@ -183,7 +183,7 @@ public class OldCreditSesameView extends View
         //最外层圆环渐变画笔设置
         mGradientRingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mGradientRingPaint.setShader(mShader);
-        mGradientRingPaint.setStrokeCap(Paint.Cap.SQUARE);
+        mGradientRingPaint.setStrokeCap(Paint.Cap.ROUND);
         mGradientRingPaint.setStyle(Paint.Style.STROKE);
         mGradientRingPaint.setStrokeWidth(40);
 
