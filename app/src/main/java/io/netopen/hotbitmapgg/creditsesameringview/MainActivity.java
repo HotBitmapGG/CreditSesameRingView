@@ -1,18 +1,19 @@
 package io.netopen.hotbitmapgg.creditsesameringview;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
-
-import io.netopen.hotbitmapgg.view.CreditSesameRingView;
 
 public class MainActivity extends AppCompatActivity
 {
 
-    private Button mButton;
 
-    private CreditSesameRingView mCreditSesameRingView;
+    private ViewPager mViewPager;
+
+    private Fragment[] fragments = new Fragment[]{Fragment1.newInstance(), Fragment2.newInstance()};
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -21,17 +22,35 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mButton = (Button) findViewById(R.id.btn);
-        mCreditSesameRingView = (CreditSesameRingView) findViewById(R.id.credit_sesame_ring_view);
-        mButton.setOnClickListener(new View.OnClickListener()
+        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mViewPager.setAdapter(new PagerAdapter(getSupportFragmentManager(), fragments));
+    }
+
+
+    private static class PagerAdapter extends FragmentStatePagerAdapter
+    {
+
+        private Fragment[] fragments;
+
+        public PagerAdapter(FragmentManager fm, Fragment[] fragments)
         {
 
-            @Override
-            public void onClick(View view)
-            {
+            super(fm);
+            this.fragments = fragments;
+        }
 
-                mCreditSesameRingView.setSesameData(670);
-            }
-        });
+        @Override
+        public Fragment getItem(int position)
+        {
+
+            return fragments[position];
+        }
+
+        @Override
+        public int getCount()
+        {
+
+            return 2;
+        }
     }
 }

@@ -30,7 +30,7 @@ import java.util.Date;
  * <p/>
  * 仿芝麻信用的圆环实现(旧版)
  */
-public class CreditSesameRingView extends View
+public class OldCreditSesameView extends View
 {
 
     // 最外层圆环渐变色环颜色
@@ -43,7 +43,7 @@ public class CreditSesameRingView extends View
             0xFFFF00FF
     };
 
-    //圆环的信用等级文字
+    //圆环的信用等级文本
     private static final String[] text = {
             "950", "极好",
             "700", "优秀",
@@ -52,7 +52,6 @@ public class CreditSesameRingView extends View
             "550", "较差",
             "350"
     };
-    //, "很差", "150"
 
     //中间进度颜色
     private static final int GREEN_COLOR = 0xFF06C494;
@@ -118,13 +117,13 @@ public class CreditSesameRingView extends View
     private RectF mMiddleProgressArc;
 
     // 圆环起始角度
-    private float mStartAngle = 115f;
+    private static final float mStartAngle = 115f;
 
     // 圆环结束角度
-    private float mEndAngle = 230f;
+    private static final float mEndAngle = 230f;
 
     // 指针全部进度
-    private float mTotalAngle = 240f;
+    private float mTotalAngle = 230f;
 
     // 指针当前进度
     private float mCurrentAngle = 0f;
@@ -133,31 +132,33 @@ public class CreditSesameRingView extends View
     private int defaultSize;
 
     // 最小数字
-    private int mMinNum = 350;
+    private int mMinNum = 0;
 
     // 最大数字
     private int mMaxNum = 950;
 
+    //信用等级
     private String sesameLevel = "";
 
+    //评估时间
     private String evaluationTime = "";
 
     private PaintFlagsDrawFilter mPaintFlagsDrawFilter;
 
 
-    public CreditSesameRingView(Context context)
+    public OldCreditSesameView(Context context)
     {
 
         this(context, null);
     }
 
-    public CreditSesameRingView(Context context, AttributeSet attrs)
+    public OldCreditSesameView(Context context, AttributeSet attrs)
     {
 
         this(context, attrs, 0);
     }
 
-    public CreditSesameRingView(Context context, AttributeSet attrs, int defStyleAttr)
+    public OldCreditSesameView(Context context, AttributeSet attrs, int defStyleAttr)
     {
 
         super(context, attrs, defStyleAttr);
@@ -304,6 +305,7 @@ public class CreditSesameRingView extends View
     }
 
 
+    @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas)
     {
@@ -374,7 +376,7 @@ public class CreditSesameRingView extends View
         canvas.rotate(270);
         canvas.drawArc(mMiddleProgressArc, -mStartAngle, mCurrentAngle, false, mMiddleProgressPaint);
         canvas.rotate(68 + mCurrentAngle);
-        @SuppressLint("DrawAllocation") Matrix matrix = new Matrix();
+        Matrix matrix = new Matrix();
         matrix.preTranslate(-oval4 - mBitmapWidth * 3 / 8, -mBitmapHeight / 2);
         canvas.drawBitmap(mBitmap, matrix, mPointerBitmapPaint);
         canvas.restore();
@@ -398,14 +400,23 @@ public class CreditSesameRingView extends View
         } else if (num <= 550)
         {
             mMaxNum = num;
-            mTotalAngle = (num - 350) * 80 / 400f;
-            sesameLevel = "信用良好";
+            mTotalAngle = (num - 350) * 80 / 400f + 13;
+            sesameLevel = "信用较差";
             evaluationTime = "评估时间:" + getCurrentTime();
         } else if (num <= 700)
         {
             mMaxNum = num;
-            mTotalAngle = (num - 550) * 120 / 150f + 65;
-            sesameLevel = "信用优秀";
+            if (num > 550 && num <= 600)
+            {
+                sesameLevel = "信用中等";
+            } else if (num > 600 && num <= 650)
+            {
+                sesameLevel = "信用良好";
+            } else
+            {
+                sesameLevel = "信用优秀";
+            }
+            mTotalAngle = (num - 550) * 120 / 150f + 45;
             evaluationTime = "评估时间:" + getCurrentTime();
         } else if (num <= 950)
         {
