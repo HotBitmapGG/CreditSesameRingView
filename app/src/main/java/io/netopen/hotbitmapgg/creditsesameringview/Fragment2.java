@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 
 import io.netopen.hotbitmapgg.view.OldCreditSesameView;
 
@@ -19,7 +19,7 @@ public class Fragment2 extends Fragment
 
     private OldCreditSesameView oldCreditSesameView;
 
-    private Button mButton;
+    private ImageView mButton;
 
     public static Fragment2 newInstance()
     {
@@ -35,7 +35,7 @@ public class Fragment2 extends Fragment
 
         View view = inflater.inflate(R.layout.fragment_2, null);
         oldCreditSesameView = (OldCreditSesameView) view.findViewById(R.id.sesame_view);
-        mButton = (Button) view.findViewById(R.id.btn);
+        mButton = (ImageView) view.findViewById(R.id.btn);
         mButton.setOnClickListener(new View.OnClickListener()
         {
 

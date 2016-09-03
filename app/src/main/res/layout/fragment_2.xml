@@ -11,12 +11,12 @@
         android:layout_centerInParent="true" />
 
 
-    <Button
+    <ImageView
         android:id="@+id/btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/sesame_view"
         android:layout_centerInParent="true"
-        android:text="开始" />
+        android:background="@mipmap/ic_ting_play" />
 
 </RelativeLayout>
