@@ -3,9 +3,14 @@ package io.netopen.hotbitmapgg.view;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
@@ -106,6 +111,21 @@ public class NewCreditSesameView extends View
     //评估时间
     private String evaluationTime = "";
 
+    //小圆点
+    private Bitmap bitmap;
+
+    //当前点的实际位置
+    private float[] pos;
+
+    //当前点的tangent值
+    private float[] tan;
+
+    //矩阵
+    private Matrix matrix;
+
+    //小圆点画笔
+    private Paint mBitmapPaint;
+
 
     public NewCreditSesameView(Context context)
     {
@@ -179,6 +199,16 @@ public class NewCreditSesameView extends View
         mArcProgressPaint.setColor(Color.WHITE);
         mArcProgressPaint.setStyle(Paint.Style.STROKE);
         mArcProgressPaint.setStrokeCap(Paint.Cap.ROUND);
+
+        mBitmapPaint = new Paint();
+        mBitmapPaint.setStyle(Paint.Style.FILL);
+        mBitmapPaint.setAntiAlias(true);
+
+        //初始化小圆点图片
+        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_circle);
+        pos = new float[2];
+        tan = new float[2];
+        matrix = new Matrix();
     }
 
     @Override
@@ -251,14 +281,26 @@ public class NewCreditSesameView extends View
     }
 
     /**
-     * 绘制外层圆环进度
+     * 绘制外层圆环进度和小圆点
      *
      * @param canvas
      */
     private void drawRingProgress(Canvas canvas)
     {
 
-        canvas.drawArc(mMiddleProgressRect, mStartAngle, mCurrentAngle, false, mArcProgressPaint);
+        Path path = new Path();
+        path.addArc(mMiddleProgressRect, mStartAngle, mCurrentAngle);
+        PathMeasure pathMeasure = new PathMeasure(path, false);
+        pathMeasure.getPosTan(pathMeasure.getLength() * 1, pos, tan);
+        matrix.reset();
+        matrix.postTranslate(pos[0] - bitmap.getWidth() / 2, pos[1] - bitmap.getHeight() / 2);
+        canvas.drawPath(path, mArcProgressPaint);
+        //起始角度不为0时候才进行绘制小圆点
+        if (mCurrentAngle == 0)
+            return;
+        canvas.drawBitmap(bitmap, matrix, mBitmapPaint);
+        mBitmapPaint.setColor(Color.WHITE);
+        canvas.drawCircle(pos[0], pos[1], 8, mBitmapPaint);
     }
 
     /**
