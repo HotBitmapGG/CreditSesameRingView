@@ -21,9 +21,11 @@ public class Fragment1 extends Fragment
 {
 
     private final int[] mColors = new int[]{
-            0xFFff7997,
-            0xFFff5177,
-            };
+            0xFFFF80AB,
+            0xFFFF4081,
+            0xFFFF5177,
+            0xFFFF7997
+    };
 
     private RelativeLayout mLayout;
 

@@ -43,7 +43,7 @@ public class Fragment2 extends Fragment
             public void onClick(View view)
             {
 
-                oldCreditSesameView.setSesameData(638);
+                oldCreditSesameView.setSesameValues(639);
             }
         });
 

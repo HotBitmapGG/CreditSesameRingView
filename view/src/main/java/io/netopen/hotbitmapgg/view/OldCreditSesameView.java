@@ -12,6 +12,8 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.PathEffect;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
@@ -36,11 +38,8 @@ public class OldCreditSesameView extends View
     // 最外层圆环渐变色环颜色
     private final int[] mColors = new int[]{
             0xFFFF0000,
-            0xFFFFFF00,
-            0xFF00FF00,
-            0xFF00FFFF,
-            0xFF0000FF,
-            0xFFFF00FF
+            0xFFFFD600,
+            0xFF00FF00
     };
 
     //圆环的信用等级文本
@@ -56,13 +55,15 @@ public class OldCreditSesameView extends View
     //中间进度颜色
     private static final int GREEN_COLOR = 0xFF06C494;
 
-    // View宽度
+    private static final int GRAY_COLOR = 0xFFBEBBB4;
+
+    // 宽度
     private int width;
 
-    // View高度
+    // 高度
     private int height;
 
-    // 圆环半径
+    // 半径
     private int radius;
 
     // 指针图片
@@ -173,47 +174,51 @@ public class OldCreditSesameView extends View
         //设置默认宽高值
         defaultSize = dp2px(250);
 
-        //初始化圆环渐变色渲染
-        Shader mShader = new SweepGradient(0, 0, mColors, null);
-
         //设置图片线条的抗锯齿
         mPaintFlagsDrawFilter = new PaintFlagsDrawFilter
                 (0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
 
         //最外层圆环渐变画笔设置
         mGradientRingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        //设置圆环渐变色渲染
+        mGradientRingPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
+        float position[] = {0.1f, 0.3f, 0.8f};
+        Shader mShader = new SweepGradient(width / 2, radius, mColors, position);
         mGradientRingPaint.setShader(mShader);
         mGradientRingPaint.setStrokeCap(Paint.Cap.ROUND);
         mGradientRingPaint.setStyle(Paint.Style.STROKE);
         mGradientRingPaint.setStrokeWidth(40);
 
-        //最外层圆环刻度画笔设置
+        //最外层圆环大小刻度画笔设置
         mSmallCalibrationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mBigCalibrationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mSmallCalibrationPaint.setColor(Color.WHITE);
+        mSmallCalibrationPaint.setStyle(Paint.Style.STROKE);
         mSmallCalibrationPaint.setStrokeWidth(1);
+
+        mBigCalibrationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBigCalibrationPaint.setColor(Color.WHITE);
-        mBigCalibrationPaint.setStrokeWidth(3);
+        mBigCalibrationPaint.setStyle(Paint.Style.STROKE);
+        mBigCalibrationPaint.setStrokeWidth(4);
 
         //中间圆环画笔设置
         mMiddleRingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mMiddleRingPaint.setStyle(Paint.Style.STROKE);
         mMiddleRingPaint.setStrokeCap(Paint.Cap.ROUND);
         mMiddleRingPaint.setStrokeWidth(5);
-        mMiddleRingPaint.setColor(Color.GRAY);
+        mMiddleRingPaint.setColor(GRAY_COLOR);
 
         //内层圆环画笔设置
         mInnerRingPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mInnerRingPaint.setStyle(Paint.Style.STROKE);
         mInnerRingPaint.setStrokeCap(Paint.Cap.ROUND);
         mInnerRingPaint.setStrokeWidth(4);
-        mInnerRingPaint.setColor(Color.GRAY);
+        mInnerRingPaint.setColor(GRAY_COLOR);
         PathEffect mPathEffect = new DashPathEffect(new float[]{5, 5, 5, 5}, 1);
         mInnerRingPaint.setPathEffect(mPathEffect);
 
         //外层圆环文本画笔设置
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setColor(Color.GRAY);
+        mTextPaint.setColor(GRAY_COLOR);
         mTextPaint.setTextSize(30);
 
         //中间文字画笔设置
@@ -289,16 +294,20 @@ public class OldCreditSesameView extends View
         //确定View宽高
         width = w;
         height = h;
+
         //圆环半径
         radius = width / 2;
-        // 外层圆环
+
+        //外层圆环
         float oval1 = radius - mGradientRingPaint.getStrokeWidth() * 0.5f;
         mOuterArc = new RectF(-oval1, -oval1, oval1, oval1);
+
         //中间和内层圆环
         float oval2 = radius * 5 / 8;
         float oval3 = radius * 3 / 4;
         mInnerArc = new RectF(-oval2, -oval2, oval2, oval2);
         mMiddleArc = new RectF(-oval3, -oval3, oval3, oval3);
+
         //中间进度圆环
         oval4 = radius * 6 / 8;
         mMiddleProgressArc = new RectF(-oval4, -oval4, oval4, oval4);
@@ -311,47 +320,44 @@ public class OldCreditSesameView extends View
     {
         //设置画布绘图无锯齿
         canvas.setDrawFilter(mPaintFlagsDrawFilter);
+
+        drawArc(canvas);
+        drawCalibration(canvas);
+        drawArcText(canvas);
+        drawCenterText(canvas);
+        drawBitmapProgress(canvas);
+    }
+
+    /**
+     * 绘制中间进度和指针图片
+     *
+     * @param canvas
+     */
+    private void drawBitmapProgress(Canvas canvas)
+    {
+
         canvas.save();
-        canvas.translate(width / 2, height / 2);
-
-        //画最外层的渐变圆环
-        canvas.rotate(140);
-        canvas.drawArc(mOuterArc, -mStartAngle, -mEndAngle, false, mGradientRingPaint);
-
-        //绘制内圈圆形
-        canvas.drawArc(mInnerArc, -mStartAngle, -mEndAngle, false, mInnerRingPaint);
-        canvas.drawArc(mMiddleArc, -mStartAngle, -mEndAngle, false, mMiddleRingPaint);
+        canvas.translate(radius, radius);
+        canvas.rotate(270);
+        canvas.drawArc(mMiddleProgressArc, -mStartAngle, mCurrentAngle, false, mMiddleProgressPaint);
+        canvas.rotate(68 + mCurrentAngle);
+        Matrix matrix = new Matrix();
+        matrix.preTranslate(-oval4 - mBitmapWidth * 3 / 8, -mBitmapHeight / 2);
+        canvas.drawBitmap(mBitmap, matrix, mPointerBitmapPaint);
         canvas.restore();
+    }
 
-        //绘制刻度线
-        int dst = (int) (2 * radius - mGradientRingPaint.getStrokeWidth());
-        for (int i = 0; i <= 50; i++)
-        {
-            canvas.save();
-            canvas.rotate(-(-10 + 4 * i), radius, radius);
-            if (i % 10 == 0)
-            {
-                canvas.drawLine(dst, radius, 2 * radius, radius, mBigCalibrationPaint);
-            } else
-            {
-                canvas.drawLine(dst, radius, 2 * radius, radius, mSmallCalibrationPaint);
-            }
-            canvas.restore();
-        }
-
-
-        //绘制圆弧上的文字
-        for (int i = 0; i <= 10; i++)
-        {
-            canvas.save();
-            canvas.rotate(-(-10 + 20 * i - 88), radius, radius);
-            canvas.drawText(text[i], radius - 10, radius * 3 / 16, mTextPaint);
-            canvas.restore();
-        }
+    /**
+     * 绘制中间文本内容
+     *
+     * @param canvas
+     */
+    private void drawCenterText(Canvas canvas)
+    {
 
         //绘制Logo
         mCenterTextPaint.setTextSize(30);
-        mCenterTextPaint.setColor(Color.GRAY);
+        mCenterTextPaint.setColor(GRAY_COLOR);
         canvas.drawText("BETA", radius, radius - 130, mCenterTextPaint);
 
         //绘制信用分数
@@ -369,16 +375,67 @@ public class OldCreditSesameView extends View
         mCenterTextPaint.setColor(Color.GRAY);
         mCenterTextPaint.setTextSize(30);
         canvas.drawText(evaluationTime, radius, radius + 205, mCenterTextPaint);
+    }
 
-        //绘制中间进度和指针图片
+    /**
+     * 绘制圆弧上的文本
+     *
+     * @param canvas
+     */
+    private void drawArcText(Canvas canvas)
+    {
+
+        for (int i = 0; i <= 10; i++)
+        {
+            canvas.save();
+            canvas.rotate(-(-10 + 20 * i - 88), radius, radius);
+            canvas.drawText(text[i], radius - 10, radius * 3 / 16, mTextPaint);
+            canvas.restore();
+        }
+    }
+
+    /**
+     * 绘制大小刻度线
+     *
+     * @param canvas
+     */
+    private void drawCalibration(Canvas canvas)
+    {
+
+        int dst = (int) (2 * radius - mGradientRingPaint.getStrokeWidth());
+        for (int i = 0; i <= 50; i++)
+        {
+            canvas.save();
+            canvas.rotate(-(-10 + 4 * i), radius, radius);
+            if (i % 10 == 0)
+            {
+                canvas.drawLine(dst, radius, 2 * radius, radius, mBigCalibrationPaint);
+            } else
+            {
+                canvas.drawLine(dst, radius, 2 * radius, radius, mSmallCalibrationPaint);
+            }
+            canvas.restore();
+        }
+    }
+
+    /**
+     * 分别绘制外层 中间 内层圆环
+     *
+     * @param canvas
+     */
+    private void drawArc(Canvas canvas)
+    {
+
         canvas.save();
-        canvas.translate(radius, radius);
-        canvas.rotate(270);
-        canvas.drawArc(mMiddleProgressArc, -mStartAngle, mCurrentAngle, false, mMiddleProgressPaint);
-        canvas.rotate(68 + mCurrentAngle);
-        Matrix matrix = new Matrix();
-        matrix.preTranslate(-oval4 - mBitmapWidth * 3 / 8, -mBitmapHeight / 2);
-        canvas.drawBitmap(mBitmap, matrix, mPointerBitmapPaint);
+        canvas.translate(width / 2, height / 2);
+
+        //画最外层的渐变圆环
+        canvas.rotate(140);
+        canvas.drawArc(mOuterArc, -mStartAngle, -mEndAngle, false, mGradientRingPaint);
+
+        //绘制内圈圆形
+        canvas.drawArc(mInnerArc, -mStartAngle, -mEndAngle, false, mInnerRingPaint);
+        canvas.drawArc(mMiddleArc, -mStartAngle, -mEndAngle, false, mMiddleRingPaint);
         canvas.restore();
     }
 
@@ -388,7 +445,7 @@ public class OldCreditSesameView extends View
      *
      * @param num
      */
-    public void setSesameData(int num)
+    public void setSesameValues(int num)
     {
 
         if (num <= 350)
