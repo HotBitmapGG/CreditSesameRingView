@@ -1,5 +1,6 @@
 # CreditSesameRingView
-Imitation of Ali credit sesame new old ring view.
+
+Imitation of Ali credit sesame new old ring view,If you feel like it, give me a star, please support, thank you.
 
 
 ## Screenshots Gif
