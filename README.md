@@ -2,6 +2,7 @@
 
 Imitation of Ali credit sesame new old ring view,If you feel like it, give me a star, please support, thank you.
 
+[简书](http://www.jianshu.com/p/8486a5baa708)
 
 ## Screenshots Gif
 
