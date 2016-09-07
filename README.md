@@ -1,5 +1,7 @@
 # CreditSesameRingView
 
+[![](https://jitpack.io/v/HotBitmapGG/CreditSesameRingView.svg)](https://jitpack.io/#HotBitmapGG/CreditSesameRingView)
+
 Imitation of Ali credit sesame new old ring view,If you feel like it, give me a star, please support, thank you.
 
 ## Screenshots Gif
@@ -31,7 +33,7 @@ Add it in your root build.gradle at the end of repositories:
 Add the dependency
 
 	dependencies {
-	        compile 'com.github.HotBitmapGG:CreditSesameRingView:V1.0.2'
+	        compile 'com.github.HotBitmapGG:CreditSesameRingView:V1.0.3'
 	}
 
 ```
