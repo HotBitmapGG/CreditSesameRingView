@@ -1,6 +1,6 @@
 # CreditSesameRingView
 
-[![](https://jitpack.io/v/HotBitmapGG/CreditSesameRingView.svg)](https://jitpack.io/#HotBitmapGG/CreditSesameRingView) [![Wercker](https://img.shields.io/wercker/ci/wercker/docs.svg?maxAge=2592000?style=plastic)]() [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000?style=plastic)]()
+[![](https://jitpack.io/v/HotBitmapGG/CreditSesameRingView.svg)](https://jitpack.io/#HotBitmapGG/CreditSesameRingView) [![Codecov](https://img.shields.io/badge/Android%20Circular-CreditSesameRingView-brightgreen.svg?style=plastic)]() [![Wercker](https://img.shields.io/wercker/ci/wercker/docs.svg?maxAge=2592000?style=plastic)]() [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000?style=plastic)]()  [![Libraries.io for GitHub](https://img.shields.io/badge/version-V1.0.3-brightgreen.svg?style=plastic)]()[![Bower](https://img.shields.io/badge/weibo-HotBitmapGG-blue.svg?style=plastic)]()
 
 Imitation of Ali credit sesame new old ring view,If you feel like it, give me a star, please support, thank you.
 
