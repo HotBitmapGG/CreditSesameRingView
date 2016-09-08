@@ -2,6 +2,10 @@
 
 [![](https://jitpack.io/v/HotBitmapGG/CreditSesameRingView.svg)](https://jitpack.io/#HotBitmapGG/CreditSesameRingView)
 
+[![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg?maxAge=2592000?style=plastic)](V1.0.3)
+
+[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000?style=plastic)]()
+
 Imitation of Ali credit sesame new old ring view,If you feel like it, give me a star, please support, thank you.
 
 ## Screenshots Gif
