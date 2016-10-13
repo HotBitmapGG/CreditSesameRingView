@@ -19,7 +19,7 @@ import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.BounceInterpolator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
 import java.text.SimpleDateFormat;
@@ -466,14 +466,16 @@ public class OldCreditSesameView extends View
             if (num > 550 && num <= 600)
             {
                 sesameLevel = "信用中等";
+                mTotalAngle = (num - 550) * 120 / 150f + 43;
             } else if (num > 600 && num <= 650)
             {
                 sesameLevel = "信用良好";
+                mTotalAngle = (num - 550) * 120 / 150f + 45;
             } else
             {
                 sesameLevel = "信用优秀";
+                mTotalAngle = (num - 550) * 120 / 150f + 48;
             }
-            mTotalAngle = (num - 550) * 120 / 150f + 45;
             evaluationTime = "评估时间:" + getCurrentTime();
         } else if (num <= 950)
         {
@@ -497,7 +499,7 @@ public class OldCreditSesameView extends View
     {
 
         ValueAnimator mAngleAnim = ValueAnimator.ofFloat(mCurrentAngle, mTotalAngle);
-        mAngleAnim.setInterpolator(new BounceInterpolator());
+        mAngleAnim.setInterpolator(new AccelerateDecelerateInterpolator());
         mAngleAnim.setDuration(3000);
         mAngleAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
         {

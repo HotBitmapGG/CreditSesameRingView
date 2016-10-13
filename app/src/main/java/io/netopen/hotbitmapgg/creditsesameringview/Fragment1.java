@@ -2,6 +2,7 @@ package io.netopen.hotbitmapgg.creditsesameringview;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import java.util.Random;
 
 import io.netopen.hotbitmapgg.view.NewCreditSesameView;
 
@@ -29,10 +32,9 @@ public class Fragment1 extends Fragment
 
     private RelativeLayout mLayout;
 
-    private ImageView mButton;
-
     private NewCreditSesameView newCreditSesameView;
 
+    private Random random = new Random();
 
     public static Fragment1 newInstance()
     {
@@ -43,12 +45,13 @@ public class Fragment1 extends Fragment
 
     @Nullable
     @Override
+    @SuppressLint("InflateParams")
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
 
         View view = inflater.inflate(R.layout.fragment_1, null);
         mLayout = (RelativeLayout) view.findViewById(R.id.layout);
-        mButton = (ImageView) view.findViewById(R.id.btn);
+        ImageView mButton = (ImageView) view.findViewById(R.id.btn);
         newCreditSesameView = (NewCreditSesameView) view.findViewById(R.id.sesame_view);
         mLayout.setBackgroundColor(mColors[0]);
         mButton.setOnClickListener(new View.OnClickListener()
@@ -58,7 +61,8 @@ public class Fragment1 extends Fragment
             public void onClick(View view)
             {
 
-                newCreditSesameView.setSesameValues(639);
+                int i = random.nextInt(950);
+                newCreditSesameView.setSesameValues(i);
                 startColorChangeAnim();
             }
         });

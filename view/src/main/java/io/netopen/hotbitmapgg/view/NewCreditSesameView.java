@@ -437,14 +437,16 @@ public class NewCreditSesameView extends View
             if (values > 550 && values <= 600)
             {
                 sesameLevel = "信用中等";
+                mTotalAngle = (values - 550) * 120 / 150f + 43;
             } else if (values > 600 && values <= 650)
             {
                 sesameLevel = "信用良好";
+                mTotalAngle = (values - 550) * 120 / 150f + 45;
             } else
             {
                 sesameLevel = "信用优秀";
+                mTotalAngle = (values - 550) * 120 / 150f + 48;
             }
-            mTotalAngle = (values - 550) * 120 / 150f + 43;
             evaluationTime = "评估时间:" + getCurrentTime();
         } else if (values <= 950)
         {
