@@ -1,6 +1,6 @@
 # CreditSesameRingView
 
-[![](https://jitpack.io/v/HotBitmapGG/CreditSesameRingView.svg)](https://jitpack.io/#HotBitmapGG/CreditSesameRingView) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-CreditSesameRingView-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/4327) [![Wercker](https://img.shields.io/badge/Gradle-2.1.3-brightgreen.svg)]() [![Wercker](https://img.shields.io/wercker/ci/wercker/docs.svg?maxAge=2592000?style=plastic)]() [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000?style=plastic)]()
+[![](https://jitpack.io/v/HotBitmapGG/CreditSesameRingView.svg)](https://jitpack.io/#HotBitmapGG/CreditSesameRingView) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-CreditSesameRingView-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/4327) [![Wercker](https://img.shields.io/wercker/ci/wercker/docs.svg?maxAge=2592000?style=plastic)]() [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000?style=plastic)]()
 
 Imitation of Ali credit sesame new old ring view,If you feel like it, give me a star, please support, thank you.
 
@@ -15,7 +15,7 @@ Imitation of Ali credit sesame new old ring view,If you feel like it, give me a 
 
 ## Usage
 
- * add dependencies
+ * Gradle
 
 ```java
 
@@ -33,10 +33,35 @@ Add it in your root build.gradle at the end of repositories:
 Add the dependency
 
 	dependencies {
-	        compile 'com.github.HotBitmapGG:CreditSesameRingView:V1.0.3'
+	        compile 'com.github.HotBitmapGG:CreditSesameRingView:V1.0.4'
 	}
 
 ```
+
+
+ * Maven
+
+```java
+
+Step 1. Add the JitPack repository to your build file
+
+   <repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
+Step 2. Add the dependency
+
+	<dependency>
+	    <groupId>com.github.HotBitmapGG</groupId>
+	    <artifactId>CreditSesameRingView</artifactId>
+	    <version>V1.0.4</version>
+	</dependency>
+
+```
+
 
  * Sted 1 A new version of used in the code.
 
